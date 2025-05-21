@@ -40,4 +40,21 @@ void querry(int l, int r){
 }
 ```
 - 问：为什么这个能够刚好覆盖所查询的区间？<br>
-  答：mi_st[r-(1<< level)+1]\[level]意为：(r−2^level+1)+(2^level−1)=r
+  答：mi_st[r-(1<< level)+1]\[level]意为：(r−2^level+1)+(2^level−1)=r<br>
+      并且l+2^level-1>=r-2^level+1
+```C++
+int querry(int l, int r)
+{
+    // 如1->15 16 14
+    int len = r - l + 1;
+    // len=15 16 14
+    int level = log2(len);
+    // level=3 4 3
+    // 左半：1-> 8 右半：15-8+1=8->15
+    // 左半：1-> 16 右半：16-16+1=1->16
+    // 左半：1-> 8 右半：14-8+1=7->14
+    int res = max(max_ST[l][level], max_ST[r - (1 << level) + 1][level]);
+    // 解释：[r-2^level+1]=pos  [r-(1<<level)+1][level]=pos+2^level-1==r,通过抵消确保不会越过界限
+    return res;
+}
+```

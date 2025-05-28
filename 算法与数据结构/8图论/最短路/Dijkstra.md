@@ -34,3 +34,57 @@ while(!p_que.empty()){
     }
 }
 ```
+# 题型类别
+## 最短路计数
+```C++
+void solve()
+{
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> tree(n + 1);
+    vector<int> ans(n + 1, 0), dis(n + 1, uinf);
+    // 构建图
+    for (int i = 1; i <= m; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+    }
+    // 使用小顶堆的优先队列（距离，节点）
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> p_que;
+    // 初始化起点
+    dis[1] = 0;
+    ans[1] = 1; // 起点到自身有1种路径
+    p_que.push({0, 1});
+    while (!p_que.empty())
+    {
+        auto [d, u] = p_que.top();
+        p_que.pop();
+        // 跳过过时的队列条目
+        if (d != dis[u])
+            continue;
+        // 遍历所有邻居
+        for (int v : tree[u])
+        {
+            // 找到更短路径：重置计数
+            if (dis[v] > dis[u] + 1)
+            {
+                dis[v] = dis[u] + 1;
+                ans[v] = ans[u]; // 重置为当前路径的计数
+                p_que.push({dis[v], v});
+            }
+            // 找到等长路径：累加计数
+            else if (dis[v] == dis[u] + 1)
+            {
+                ans[v] = (ans[v] + ans[u]) % mod;
+            }
+        }
+    }
+    // 输出每个节点的最短路径数量
+    for (int i = 1; i <= n; i++)
+    {
+        cout << ans[i] << '\n';
+    }
+}
+```
